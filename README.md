@@ -168,6 +168,10 @@ src/
 
 Pour ajouter un écosystème, créez un détecteur dans `src/analyze/ecosystems/` qui renvoie le même format de données que les autres, puis ajoutez-le à `DETECTORS` dans [src/analyze/index.js](src/analyze/index.js).
 
+### Site web
+
+La page de présentation est [docs/index.html](docs/index.html) : un seul fichier HTML, sans dépendance, en français et en anglais (`?lang=en`). Pour la publier, ouvrez **Settings → Pages** sur GitHub, choisissez la branche `main` et le dossier `/docs`. Les liens vers le dépôt se déduisent de l'adresse `https://<utilisateur>.github.io/<dépôt>/`. Pour un domaine personnalisé, renseignez la balise `<meta name="repository">` en haut du fichier.
+
 ## Licence
 
 Distribué sous licence **MIT**. Voir [`LICENSE`](LICENSE).

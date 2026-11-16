@@ -1,0 +1,639 @@
+<!doctype html>
+<html lang="fr" data-lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>readme-start — un README complet en une commande</title>
+  <meta name="description" content="readme-start lit votre projet et écrit un README.md complet : badges, installation, utilisation, scripts, tests, Docker. Zéro configuration, zéro dépendance.">
+  <!-- Optional: the GitHub repository URL. Left empty, it is deduced from the
+       GitHub Pages address (https://<user>.github.io/<repo>/). -->
+  <meta name="repository" content="">
+  <meta property="og:title" content="readme-start">
+  <meta property="og:description" content="A complete README.md from your project's files, in one command.">
+  <meta property="og:type" content="website">
+  <meta name="theme-color" content="#0d0f0e" media="(prefers-color-scheme: dark)">
+  <meta name="theme-color" content="#fbfaf7" media="(prefers-color-scheme: light)">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%23047857'/%3E%3Cpath d='M10 7h9l5 5v13H10z' fill='%23fff'/%3E%3Cpath d='M15 15l5 3-5 3z' fill='%23047857'/%3E%3C/svg%3E">
+  <style>
+    :root {
+      color-scheme: light dark;
+      --bg: #fbfaf7;
+      --surface: #ffffff;
+      --surface-2: #f3f1ec;
+      --text: #1a1a17;
+      --muted: #5d5b54;
+      --border: #e4e1d8;
+      --accent: #047857;
+      --accent-soft: #e3f3ec;
+      --accent-ink: #ffffff;
+      --term-bg: #0f1311;
+      --term-text: #d8dcd8;
+      --term-dim: #8a918c;
+      --term-green: #4ade80;
+      --term-cyan: #67e8f9;
+      --radius: 14px;
+      --shadow: 0 1px 2px rgb(20 20 15 / 6%), 0 12px 32px -12px rgb(20 20 15 / 18%);
+      --mono: ui-monospace, "SFMono-Regular", "Cascadia Code", Menlo, Consolas, monospace;
+      --sans: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg: #0d0f0e;
+        --surface: #151816;
+        --surface-2: #1c201d;
+        --text: #ecebe6;
+        --muted: #a3a29a;
+        --border: #2a2f2b;
+        --accent: #34d399;
+        --accent-soft: #12271e;
+        --accent-ink: #052e1f;
+        --term-bg: #0a0c0b;
+        --shadow: 0 1px 2px rgb(0 0 0 / 30%), 0 16px 40px -16px rgb(0 0 0 / 60%);
+      }
+    }
+
+    * { box-sizing: border-box; }
+    [hidden] { display: none !important; }
+    html { scroll-behavior: smooth; }
+    @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } * { animation: none !important; } }
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--text);
+      font: 16px/1.6 var(--sans);
+      -webkit-font-smoothing: antialiased;
+    }
+    /* Bilingual content: only the active language is shown. */
+    [data-lang="fr"] [lang="en"], [data-lang="en"] [lang="fr"] { display: none !important; }
+
+    a { color: var(--accent); text-underline-offset: 3px; }
+    a:hover { text-decoration-thickness: 2px; }
+    :focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; border-radius: 6px; }
+    /* Programming fonts turn "<!--" and "--" into arrows and dashes: keep the real characters. */
+    code, kbd, pre { font-variant-ligatures: none; font-feature-settings: "liga" 0, "calt" 0; }
+    code, kbd { font-family: var(--mono); font-size: 0.9em; }
+    p code, li code, td code, .desc code {
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 0.1em 0.4em;
+      white-space: nowrap;
+    }
+
+    .container { width: 100%; max-width: 1120px; margin: 0 auto; padding: 0 20px; }
+    @media (max-width: 600px) { .container { padding: 0 16px; } }
+
+    /* Header */
+    header.site {
+      position: sticky; top: 0; z-index: 10;
+      background: color-mix(in srgb, var(--bg) 85%, transparent);
+      backdrop-filter: blur(10px);
+      border-bottom: 1px solid var(--border);
+    }
+    .nav { display: flex; align-items: center; gap: 24px; height: 60px; }
+    .brand { display: flex; align-items: center; gap: 10px; font: 600 17px var(--mono); color: var(--text); text-decoration: none; white-space: nowrap; }
+    @media (max-width: 440px) { .brand { font-size: 15px; } .nav-actions .label { display: none; } }
+    @media (max-width: 600px) { .terminal pre, .code-card pre { font-size: 12px; } }
+    .brand svg { flex: none; }
+    .nav-links { display: flex; gap: 20px; margin-left: auto; }
+    .nav-links a { color: var(--muted); text-decoration: none; font-size: 15px; }
+    .nav-links a:hover { color: var(--text); }
+    .nav-actions { display: flex; align-items: center; gap: 10px; }
+    @media (max-width: 760px) { .nav-links { display: none; } .nav-actions { margin-left: auto; } }
+
+    .lang-switch { display: inline-flex; border: 1px solid var(--border); border-radius: 999px; padding: 2px; background: var(--surface); }
+    .lang-switch button {
+      border: 0; background: transparent; color: var(--muted); font: 600 12px var(--sans);
+      padding: 5px 10px; border-radius: 999px; cursor: pointer;
+    }
+    .lang-switch button[aria-pressed="true"] { background: var(--text); color: var(--bg); }
+
+    .btn {
+      display: inline-flex; align-items: center; gap: 8px;
+      border: 1px solid var(--border); background: var(--surface); color: var(--text);
+      padding: 9px 16px; border-radius: 10px; font: 500 15px var(--sans);
+      text-decoration: none; cursor: pointer; transition: border-color .15s, transform .15s;
+    }
+    .btn:hover { border-color: var(--muted); }
+    .btn.primary { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); }
+    .btn.primary:hover { filter: brightness(1.08); }
+    .btn.small { padding: 6px 12px; font-size: 14px; }
+
+    /* Hero */
+    .hero { padding: 88px 0 40px; text-align: center; }
+    .eyebrow {
+      display: inline-flex; align-items: center; gap: 8px; margin-bottom: 22px;
+      font-size: 13px; color: var(--muted); border: 1px solid var(--border); background: var(--surface);
+      padding: 5px 12px; border-radius: 999px;
+    }
+    .eyebrow .dot { width: 7px; height: 7px; border-radius: 50%; background: var(--accent); }
+    h1 {
+      margin: 0 auto; max-width: 820px;
+      font-size: clamp(38px, 6.4vw, 68px); line-height: 1.04; letter-spacing: -0.035em; font-weight: 750;
+    }
+    h1 em { font-style: normal; color: var(--accent); }
+    .lead { margin: 22px auto 0; max-width: 640px; font-size: clamp(17px, 2.2vw, 20px); color: var(--muted); }
+    .install { margin: 34px auto 0; display: flex; flex-wrap: wrap; justify-content: center; gap: 12px; }
+    .cmd {
+      display: inline-flex; align-items: center; gap: 14px;
+      background: var(--term-bg); color: var(--term-text);
+      border-radius: 12px; padding: 8px 8px 8px 18px; font: 15px var(--mono);
+      box-shadow: var(--shadow); max-width: 100%;
+    }
+    .cmd .prompt { color: var(--term-green); user-select: none; }
+    .cmd code { font-size: inherit; overflow-x: auto; white-space: nowrap; }
+    .copy {
+      border: 1px solid #2e3631; background: #1a201c; color: var(--term-text);
+      border-radius: 8px; padding: 6px 10px; font: 500 13px var(--sans); cursor: pointer; flex: none;
+    }
+    .copy:hover { background: #222a25; }
+    .meta-line { margin-top: 18px; font-size: 14px; color: var(--muted); }
+    .meta-line .item + .item::before { content: "·"; margin: 0 10px; opacity: .6; }
+
+    /* Demo */
+    .demo { display: grid; grid-template-columns: 1fr 1.08fr; gap: 22px; padding: 36px 0 24px; align-items: start; }
+    @media (max-width: 900px) { .demo { grid-template-columns: 1fr; } }
+    .window { border-radius: var(--radius); box-shadow: var(--shadow); overflow: hidden; border: 1px solid var(--border); }
+    .window-bar { display: flex; align-items: center; gap: 7px; padding: 11px 14px; font: 12px var(--mono); }
+    .window-bar i { width: 11px; height: 11px; border-radius: 50%; display: block; }
+    .window-bar i:nth-child(1) { background: #f87171; } .window-bar i:nth-child(2) { background: #fbbf24; } .window-bar i:nth-child(3) { background: #4ade80; }
+    .window-bar span { margin-left: 10px; opacity: .65; }
+    .terminal { background: var(--term-bg); color: var(--term-text); border-color: #1f2622; }
+    .terminal .window-bar { background: #151a17; color: var(--term-text); }
+    .terminal pre { margin: 0; padding: 18px 20px 22px; font: 13.5px/1.75 var(--mono); overflow-x: auto; }
+    .t-prompt { color: var(--term-green); } .t-dim { color: var(--term-dim); } .t-ok { color: var(--term-green); } .t-cyan { color: var(--term-cyan); }
+    .cursor { display: inline-block; width: 8px; height: 16px; background: var(--term-text); vertical-align: -3px; animation: blink 1.1s steps(1) infinite; }
+    @keyframes blink { 50% { opacity: 0; } }
+
+    .readme { background: var(--surface); }
+    .readme .window-bar { background: var(--surface-2); color: var(--muted); border-bottom: 1px solid var(--border); }
+    .md { padding: 22px 26px 26px; font-size: 14.5px; }
+    .md .center { text-align: center; padding-bottom: 14px; border-bottom: 1px solid var(--border); }
+    .md h3 { font-size: 26px; margin: 0 0 6px; letter-spacing: -0.02em; }
+    .md h4 { font-size: 17px; margin: 18px 0 10px; padding-bottom: 6px; border-bottom: 1px solid var(--border); }
+    .md p { margin: 0 0 10px; color: var(--muted); }
+    .md ol { margin: 0; padding-left: 20px; }
+    .md li { margin: 6px 0; }
+    .md pre { margin: 6px 0 10px; background: var(--surface-2); border: 1px solid var(--border); border-radius: 8px; padding: 9px 12px; font: 12.5px/1.5 var(--mono); overflow-x: auto; }
+    .shields { display: flex; flex-wrap: wrap; justify-content: center; gap: 5px; margin-top: 10px; }
+    .shield { display: inline-flex; font: 11px/18px var(--sans); border-radius: 3px; overflow: hidden; color: #fff; }
+    .shield b { background: #555; padding: 0 6px; font-weight: 400; }
+    .shield s { text-decoration: none; padding: 0 6px; }
+    .stack { display: flex; flex-wrap: wrap; gap: 6px; }
+    .stack span { font: 700 10.5px/24px var(--sans); letter-spacing: .08em; text-transform: uppercase; color: #fff; padding: 0 9px; border-radius: 3px; }
+
+    /* Sections */
+    section.block { padding: 72px 0 0; }
+    .section-head { max-width: 640px; margin-bottom: 30px; }
+    h2 { font-size: clamp(28px, 3.6vw, 38px); line-height: 1.15; letter-spacing: -0.025em; margin: 0 0 12px; }
+    .section-head p { margin: 0; color: var(--muted); font-size: 17px; }
+
+    .features { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+    @media (max-width: 900px) { .features { grid-template-columns: repeat(2, 1fr); } }
+    @media (max-width: 600px) { .features { grid-template-columns: 1fr; } }
+    .card {
+      background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius);
+      padding: 20px 20px 18px;
+    }
+    .card .icon {
+      width: 36px; height: 36px; border-radius: 10px; display: grid; place-items: center;
+      background: var(--accent-soft); color: var(--accent); margin-bottom: 14px;
+    }
+    .card h3 { margin: 0 0 6px; font-size: 16.5px; letter-spacing: -0.01em; }
+    .card p { margin: 0; color: var(--muted); font-size: 15px; }
+
+    .split { display: grid; grid-template-columns: 1fr 1fr; gap: 28px; align-items: center; }
+    @media (max-width: 900px) { .split { grid-template-columns: 1fr; } }
+    .rules { list-style: none; padding: 0; margin: 0; display: grid; gap: 14px; }
+    .rules li { display: grid; grid-template-columns: 30px 1fr; gap: 12px; }
+    .rules .num {
+      width: 30px; height: 30px; border-radius: 50%; display: grid; place-items: center;
+      background: var(--accent); color: var(--accent-ink); font: 700 14px var(--sans);
+    }
+    .rules strong { display: block; }
+    .rules span.desc { color: var(--muted); font-size: 15px; }
+    .code-card { background: var(--term-bg); color: var(--term-text); border-radius: var(--radius); box-shadow: var(--shadow); overflow: hidden; }
+    .code-card pre { margin: 0; padding: 20px 22px; font: 13.5px/1.7 var(--mono); overflow-x: auto; }
+    .c-comment { color: #6b8f7c; } .c-heading { color: #f0abfc; } .c-marker { color: var(--term-cyan); }
+
+    .langs { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 10px; }
+    .lang { display: flex; gap: 14px; align-items: flex-start; background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 14px 16px; }
+    .lang .swatch { flex: none; width: 10px; height: 10px; border-radius: 3px; margin-top: 8px; }
+    .lang strong { display: block; font-size: 15.5px; }
+    .lang small { color: var(--muted); font-size: 13.5px; line-height: 1.45; display: block; }
+
+    .table-wrap { overflow-x: auto; border: 1px solid var(--border); border-radius: var(--radius); background: var(--surface); }
+    table { border-collapse: collapse; width: 100%; font-size: 15px; }
+    th, td { text-align: left; padding: 12px 18px; border-bottom: 1px solid var(--border); vertical-align: top; }
+    tr:last-child td { border-bottom: 0; }
+    th { font-size: 13px; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); font-weight: 600; background: var(--surface-2); }
+    td:first-child { white-space: nowrap; }
+    td code { white-space: nowrap; }
+
+    .cta { margin: 88px 0 0; padding: 48px 28px; text-align: center; border-radius: 22px; background: var(--surface); border: 1px solid var(--border); }
+    .cta h2 { margin-bottom: 8px; }
+    .cta p { color: var(--muted); margin: 0 0 24px; }
+
+    footer.site { margin-top: 72px; padding: 28px 0 40px; border-top: 1px solid var(--border); color: var(--muted); font-size: 14px; }
+    footer .row { display: flex; flex-wrap: wrap; gap: 12px 24px; justify-content: space-between; }
+    footer a { color: var(--muted); }
+
+    .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+  </style>
+</head>
+<body>
+  <header class="site">
+    <div class="container nav">
+      <a class="brand" href="#top" aria-label="readme-start">
+        <svg width="26" height="26" viewBox="0 0 32 32" aria-hidden="true"><rect width="32" height="32" rx="8" fill="var(--accent)"/><path d="M10 7h9l5 5v13H10z" fill="var(--bg)"/><path d="M15 15l5 3-5 3z" fill="var(--accent)"/></svg>
+        readme-start
+      </a>
+      <nav class="nav-links" aria-label="Sections">
+        <a href="#features"><span lang="fr">Fonctionnalités</span><span lang="en">Features</span></a>
+        <a href="#keep"><span lang="fr">Régénération</span><span lang="en">Regeneration</span></a>
+        <a href="#languages"><span lang="fr">Langages</span><span lang="en">Languages</span></a>
+        <a href="#options">Options</a>
+      </nav>
+      <div class="nav-actions">
+        <div class="lang-switch" role="group" aria-label="Langue / Language">
+          <button type="button" data-set-lang="fr" aria-pressed="true">FR</button>
+          <button type="button" data-set-lang="en" aria-pressed="false">EN</button>
+        </div>
+        <a class="btn small" data-repo-link hidden href="#" aria-label="GitHub">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>
+          <span class="label">GitHub</span>
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <main id="top">
+    <section class="hero container">
+      <div class="eyebrow"><span class="dot"></span>
+        <span lang="fr">12 langages · 0 dépendance · 100 % hors ligne</span>
+        <span lang="en">12 languages · 0 dependencies · 100% offline</span>
+      </div>
+      <h1>
+        <span lang="fr">Un README complet.<br><em>Une commande.</em></span>
+        <span lang="en">A complete README.<br><em>One command.</em></span>
+      </h1>
+      <p class="lead" lang="fr">readme-start lit votre projet (manifestes, Dockerfile, <code>.env.example</code>, licence, git) et écrit un <code>README.md</code> prêt à publier. Relancez-le quand le projet évolue : ce que vous avez écrit reste en place.</p>
+      <p class="lead" lang="en">readme-start reads your project (manifests, Dockerfile, <code>.env.example</code>, license, git) and writes a <code>README.md</code> that is ready to publish. Run it again as the project grows: what you wrote stays put.</p>
+
+      <div class="install">
+        <div class="cmd">
+          <span class="prompt" aria-hidden="true">$</span>
+          <code>npx readme-start</code>
+          <button type="button" class="copy" data-copy="npx readme-start">
+            <span lang="fr">Copier</span><span lang="en">Copy</span>
+          </button>
+        </div>
+      </div>
+      <div class="meta-line">
+        <span class="item"><span lang="fr">Node.js 20 ou plus</span><span lang="en">Node.js 20 or newer</span></span>
+        <span class="item"><span lang="fr">Licence MIT</span><span lang="en">MIT license</span></span>
+        <span class="item"><span lang="fr">Anglais ou français</span><span lang="en">English or French</span></span>
+      </div>
+    </section>
+
+    <section class="container demo" aria-label="Démonstration / Demo">
+      <div class="window terminal">
+        <div class="window-bar"><i></i><i></i><i></i><span>~/task-board</span></div>
+<pre lang="fr"><span class="t-prompt">$</span> npx readme-start --lang fr
+<span class="t-ok">✔</span> README.md generated
+  <span class="t-dim">Detected</span>  Node.js (pnpm)
+  <span class="t-dim">Stack</span>     TypeScript, Next.js, React, Prisma, Docker
+  <span class="t-dim">Sections</span>  Technologies · Prérequis · Installation ·
+            Utilisation · Configuration · Tests…
+
+<span class="t-dim"># … vous ajoutez une section « Fonctionnalités »</span>
+
+<span class="t-prompt">$</span> npx readme-start --lang fr
+<span class="t-ok">✔</span> README.md updated
+  <span class="t-dim">Kept</span>      <span class="t-cyan">✨ Fonctionnalités</span> (your sections)
+<span class="t-prompt">$</span> <span class="cursor" aria-hidden="true"></span></pre>
+<pre lang="en"><span class="t-prompt">$</span> npx readme-start
+<span class="t-ok">✔</span> README.md generated
+  <span class="t-dim">Detected</span>  Node.js (pnpm)
+  <span class="t-dim">Stack</span>     TypeScript, Next.js, React, Prisma, Docker
+  <span class="t-dim">Sections</span>  Tech stack · Prerequisites · Installation ·
+            Usage · Configuration · Running tests…
+
+<span class="t-dim"># … you add a "Features" section</span>
+
+<span class="t-prompt">$</span> npx readme-start
+<span class="t-ok">✔</span> README.md updated
+  <span class="t-dim">Kept</span>      <span class="t-cyan">✨ Features</span> (your sections)
+<span class="t-prompt">$</span> <span class="cursor" aria-hidden="true"></span></pre>
+      </div>
+
+      <div class="window readme" aria-label="README.md">
+        <div class="window-bar"><i></i><i></i><i></i><span>README.md</span></div>
+        <div class="md">
+          <div class="center">
+            <h3>task-board</h3>
+            <p lang="fr">Un tableau Kanban collaboratif en temps réel</p>
+            <p lang="en">A real-time collaborative Kanban board</p>
+            <div class="shields" aria-hidden="true">
+              <span class="shield"><b>CI</b><s style="background:#3fb34f">passing</s></span>
+              <span class="shield"><b>license</b><s style="background:#3fb34f">MIT</s></span>
+              <span class="shield"><b>node</b><s style="background:#5fa04e">&gt;=20</s></span>
+            </div>
+          </div>
+          <h4>🧰 <span lang="fr">Technologies</span><span lang="en">Tech stack</span></h4>
+          <div class="stack" aria-hidden="true">
+            <span style="background:#3178c6">TypeScript</span>
+            <span style="background:#000">Next.js</span>
+            <span style="background:#20232a">React</span>
+            <span style="background:#2d3748">Prisma</span>
+            <span style="background:#2496ed">Docker</span>
+          </div>
+          <h4>📦 Installation</h4>
+          <ol>
+            <li><span lang="fr">Cloner le dépôt</span><span lang="en">Clone the repository</span>
+              <pre>git clone https://github.com/acme/task-board.git
+cd task-board</pre></li>
+            <li><span lang="fr">Installer les dépendances</span><span lang="en">Install the dependencies</span>
+              <pre>pnpm install</pre></li>
+            <li><span lang="fr">Créer votre fichier d'environnement</span><span lang="en">Create your environment file</span>
+              <pre>cp .env.example .env</pre></li>
+          </ol>
+        </div>
+      </div>
+    </section>
+
+    <section class="block container" id="features">
+      <div class="section-head">
+        <h2><span lang="fr">Tout ce qu'un bon README contient</span><span lang="en">Everything a good README has</span></h2>
+        <p lang="fr">Rien n'est inventé : chaque ligne vient de vos fichiers, avec les commandes de vos propres outils.</p>
+        <p lang="en">Nothing is made up: every line comes from your files, with the commands of the tools you actually use.</p>
+      </div>
+      <div class="features">
+        <article class="card">
+          <div class="icon" aria-hidden="true"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="4 17 10 11 4 5"/><line x1="12" y1="19" x2="20" y2="19"/></svg></div>
+          <h3><span lang="fr">Les bonnes commandes</span><span lang="en">The right commands</span></h3>
+          <p lang="fr"><code>pnpm dev</code>, <code>uv run pytest</code>, <code>php artisan serve</code>, <code>flutter run</code>… selon les outils réellement présents.</p>
+          <p lang="en"><code>pnpm dev</code>, <code>uv run pytest</code>, <code>php artisan serve</code>, <code>flutter run</code>… based on the tools you really use.</p>
+        </article>
+        <article class="card">
+          <div class="icon" aria-hidden="true"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="8" width="18" height="8" rx="2"/><line x1="11" y1="8" x2="11" y2="16"/></svg></div>
+          <h3><span lang="fr">Badges automatiques</span><span lang="en">Automatic badges</span></h3>
+          <p lang="fr">Version npm, PyPI, crates.io…, statut de la CI GitHub Actions, licence, runtime et badges de chaque technologie.</p>
+          <p lang="en">npm, PyPI, crates.io… version, GitHub Actions status, license, runtime and a badge for each technology.</p>
+        </article>
+        <article class="card">
+          <div class="icon" aria-hidden="true"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12a9 9 0 1 1-3-6.7"/><polyline points="21 3 21 9 15 9"/></svg></div>
+          <h3><span lang="fr">Régénération sans perte</span><span lang="en">Lossless regeneration</span></h3>
+          <p lang="fr">Vos sections, vos retouches et vos blocs protégés restent en place quand vous relancez l'outil.</p>
+          <p lang="en">Your sections, your edits and your protected blocks stay in place when you run it again.</p>
+        </article>
+        <article class="card">
+          <div class="icon" aria-hidden="true"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg></div>
+          <h3>Monorepos</h3>
+          <p lang="fr">Workspaces pnpm, npm, Yarn, Cargo, Go, uv, Maven, Gradle, .NET, Melos… avec la liste des paquets.</p>
+          <p lang="en">pnpm, npm, Yarn, Cargo, Go, uv, Maven, Gradle, .NET, Melos workspaces… with a list of packages.</p>
+        </article>
+        <article class="card">
+          <div class="icon" aria-hidden="true"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg></div>
+          <h3><span lang="fr">Secrets protégés</span><span lang="en">Secrets stay secret</span></h3>
+          <p lang="fr">Les variables de <code>.env.example</code> sont documentées, sans jamais recopier une valeur sensible ni un jeton git.</p>
+          <p lang="en">Variables from <code>.env.example</code> are documented without ever copying a sensitive value or a git token.</p>
+        </article>
+        <article class="card">
+          <div class="icon" aria-hidden="true"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M21 8l-9-5-9 5 9 5 9-5z"/><path d="M3 8v8l9 5 9-5V8"/><path d="M12 13v8"/></svg></div>
+          <h3><span lang="fr">Zéro dépendance</span><span lang="en">Zero dependencies</span></h3>
+          <p lang="fr">Un seul paquet, aucun accès réseau : rien ne quitte votre machine. <code>npx</code> démarre en un instant.</p>
+          <p lang="en">One package, no network access: nothing leaves your machine. <code>npx</code> starts instantly.</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="block container" id="keep">
+      <div class="split">
+        <div>
+          <div class="section-head">
+            <h2><span lang="fr">Relancez-le autant que vous voulez</span><span lang="en">Run it as often as you like</span></h2>
+            <p lang="fr">readme-start met à jour ce qu'il a généré (nouvelles dépendances, nouveaux scripts…) et garde le reste.</p>
+            <p lang="en">readme-start refreshes what it generated (new dependencies, new scripts…) and keeps the rest.</p>
+          </div>
+          <ol class="rules">
+            <li><span class="num">1</span><div>
+              <strong lang="fr">Vos sections</strong><strong lang="en">Your sections</strong>
+              <span class="desc" lang="fr">Un titre qu'il ne génère pas (« FAQ », « Captures d'écran »…) reste à sa place et entre dans le sommaire.</span>
+              <span class="desc" lang="en">A heading it does not generate ("FAQ", "Screenshots"…) stays where it is and joins the table of contents.</span>
+            </div></li>
+            <li><span class="num">2</span><div>
+              <strong lang="fr">Vos retouches</strong><strong lang="en">Your edits</strong>
+              <span class="desc" lang="fr">Une section générée que vous avez modifiée est reconnue et conservée. <code>--reset</code> la régénère.</span>
+              <span class="desc" lang="en">A generated section you edited is detected and kept. <code>--reset</code> regenerates it.</span>
+            </div></li>
+            <li><span class="num">3</span><div>
+              <strong lang="fr">Vos blocs protégés</strong><strong lang="en">Your protected blocks</strong>
+              <span class="desc" lang="fr">Tout ce qui est entre deux marqueurs revient exactement entre les mêmes paragraphes.</span>
+              <span class="desc" lang="en">Anything between two markers comes back exactly between the same paragraphs.</span>
+            </div></li>
+          </ol>
+        </div>
+        <div class="code-card">
+          <div class="window-bar" style="background:#151a17;color:var(--term-text)"><i></i><i></i><i></i><span>README.md</span></div>
+<pre lang="fr"><span class="c-heading">## 📦 Installation</span>
+
+1. Cloner le dépôt
+   ```bash
+   git clone https://github.com/acme/task-board.git
+   ```
+
+<span class="c-marker">&lt;!-- readme-start:keep --&gt;</span>
+&gt; 💡 Sur Windows, lancez d'abord `corepack enable`.
+<span class="c-marker">&lt;!-- readme-start:end --&gt;</span>
+
+2. Installer les dépendances
+   ```bash
+   pnpm install
+   ```
+<span class="c-comment">&lt;!-- étapes régénérées, la note reste ici --&gt;</span></pre>
+<pre lang="en"><span class="c-heading">## 📦 Installation</span>
+
+1. Clone the repository
+   ```bash
+   git clone https://github.com/acme/task-board.git
+   ```
+
+<span class="c-marker">&lt;!-- readme-start:keep --&gt;</span>
+&gt; 💡 On Windows, run `corepack enable` first.
+<span class="c-marker">&lt;!-- readme-start:end --&gt;</span>
+
+2. Install the dependencies
+   ```bash
+   pnpm install
+   ```
+<span class="c-comment">&lt;!-- steps regenerated, the note stays here --&gt;</span></pre>
+        </div>
+      </div>
+    </section>
+
+    <section class="block container" id="languages">
+      <div class="section-head">
+        <h2><span lang="fr">12 écosystèmes reconnus</span><span lang="en">12 ecosystems supported</span></h2>
+        <p lang="fr">Gestionnaire de paquets, frameworks, tests et version du runtime sont détectés automatiquement.</p>
+        <p lang="en">Package manager, frameworks, tests and runtime version are detected automatically.</p>
+      </div>
+      <div class="langs">
+        <div class="lang"><span class="swatch" style="background:#5fa04e"></span><div><strong>Node.js</strong><small>npm, Yarn, pnpm, Bun · Next.js, React, Vue, NestJS…</small></div></div>
+        <div class="lang"><span class="swatch" style="background:#3776ab"></span><div><strong>Python</strong><small>pip, Poetry, uv, Pipenv · Django, FastAPI, Flask…</small></div></div>
+        <div class="lang"><span class="swatch" style="background:#ce422b"></span><div><strong>Rust</strong><small>Cargo, workspaces · Tokio, Axum, clap…</small></div></div>
+        <div class="lang"><span class="swatch" style="background:#00add8"></span><div><strong>Go</strong><small>go.mod, go.work · Gin, Echo, Cobra…</small></div></div>
+        <div class="lang"><span class="swatch" style="background:#777bb4"></span><div><strong>PHP</strong><small>Composer · Laravel, Symfony, Pest…</small></div></div>
+        <div class="lang"><span class="swatch" style="background:#cc342d"></span><div><strong>Ruby</strong><small>Bundler, gems · Rails, Jekyll, RSpec…</small></div></div>
+        <div class="lang"><span class="swatch" style="background:#ed8b00"></span><div><strong>Java &amp; Kotlin</strong><small>Maven, Gradle · Spring Boot, Quarkus, Android…</small></div></div>
+        <div class="lang"><span class="swatch" style="background:#512bd4"></span><div><strong>.NET</strong><small><span lang="fr">Solutions</span><span lang="en">Solutions</span> · ASP.NET Core, EF Core, NuGet…</small></div></div>
+        <div class="lang"><span class="swatch" style="background:#0175c2"></span><div><strong>Dart &amp; Flutter</strong><small>pub, Melos · Riverpod, Bloc, Firebase…</small></div></div>
+        <div class="lang"><span class="swatch" style="background:#f05138"></span><div><strong>Swift</strong><small>SwiftPM, Xcode, CocoaPods · Vapor…</small></div></div>
+        <div class="lang"><span class="swatch" style="background:#4b275f"></span><div><strong>Elixir</strong><small>Mix, Hex, umbrella · Phoenix, Ecto…</small></div></div>
+        <div class="lang"><span class="swatch" style="background:#00599c"></span><div><strong>C &amp; C++</strong><small>CMake, presets, vcpkg, Conan, Meson · Qt, SDL…</small></div></div>
+      </div>
+    </section>
+
+    <section class="block container" id="options">
+      <div class="section-head">
+        <h2><span lang="fr">Quelques options utiles</span><span lang="en">A few handy options</span></h2>
+        <p lang="fr">Tout fonctionne sans option. Celles-ci servent quand vous en avez besoin.</p>
+        <p lang="en">Everything works without options. These are there when you need them.</p>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Option</th><th><span lang="fr">Effet</span><span lang="en">What it does</span></th></tr></thead>
+          <tbody>
+            <tr><td><code>--lang fr</code></td><td><span lang="fr">README en français (anglais par défaut)</span><span lang="en">French README (English by default)</span></td></tr>
+            <tr><td><code>--stdout</code></td><td><span lang="fr">Affiche le résultat sans écrire de fichier</span><span lang="en">Prints the result without writing a file</span></td></tr>
+            <tr><td><code>-o docs/README.md</code></td><td><span lang="fr">Écrit ailleurs</span><span lang="en">Writes somewhere else</span></td></tr>
+            <tr><td><code>--reset</code></td><td><span lang="fr">Régénère aussi les sections retouchées à la main</span><span lang="en">Also regenerates the sections you edited</span></td></tr>
+            <tr><td><code>-y</code></td><td><span lang="fr">Aucune question, pratique en CI</span><span lang="en">No questions, handy in CI</span></td></tr>
+            <tr><td><code>--no-badges</code>, <code>--no-toc</code>, <code>--no-tree</code></td><td><span lang="fr">Retire les badges, le sommaire ou l'arborescence</span><span lang="en">Leaves out badges, the table of contents or the tree</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="container">
+      <div class="cta">
+        <h2><span lang="fr">Votre prochain README est à une commande</span><span lang="en">Your next README is one command away</span></h2>
+        <p lang="fr">Lancez-la à la racine de n'importe quel projet.</p>
+        <p lang="en">Run it at the root of any project.</p>
+        <div class="install">
+          <div class="cmd">
+            <span class="prompt" aria-hidden="true">$</span>
+            <code>npx readme-start</code>
+            <button type="button" class="copy" data-copy="npx readme-start">
+              <span lang="fr">Copier</span><span lang="en">Copy</span>
+            </button>
+          </div>
+          <a class="btn" data-repo-link hidden href="#">
+            <span lang="fr">Voir le code sur GitHub</span><span lang="en">View the code on GitHub</span>
+          </a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site">
+    <div class="container row">
+      <span>readme-start · <span lang="fr">licence MIT</span><span lang="en">MIT license</span></span>
+      <span>
+        <a href="https://www.npmjs.com/package/readme-start">npm</a>
+        <span data-repo-link hidden> · <a data-repo-anchor href="#">GitHub</a></span>
+      </span>
+    </div>
+  </footer>
+
+  <p class="sr-only" aria-live="polite" id="status"></p>
+
+  <script>
+    (function () {
+      var root = document.documentElement;
+      var meta = {
+        fr: {
+          title: 'readme-start — un README complet en une commande',
+          description: "readme-start lit votre projet et écrit un README.md complet : badges, installation, utilisation, scripts, tests, Docker. Zéro configuration, zéro dépendance.",
+          copied: 'Commande copiée',
+          copy: 'Copié !'
+        },
+        en: {
+          title: 'readme-start — a complete README in one command',
+          description: "readme-start reads your project and writes a complete README.md: badges, installation, usage, scripts, tests, Docker. Zero config, zero dependencies.",
+          copied: 'Command copied',
+          copy: 'Copied!'
+        }
+      };
+
+      function setLang(lang) {
+        root.setAttribute('data-lang', lang);
+        root.setAttribute('lang', lang);
+        document.title = meta[lang].title;
+        document.querySelector('meta[name="description"]').setAttribute('content', meta[lang].description);
+        document.querySelectorAll('[data-set-lang]').forEach(function (button) {
+          button.setAttribute('aria-pressed', String(button.getAttribute('data-set-lang') === lang));
+        });
+        try { localStorage.setItem('readme-start-lang', lang); } catch (e) { /* private mode */ }
+      }
+
+      // Language: ?lang=en in the URL, then the last choice, then the browser language.
+      var valid = function (lang) { return lang === 'fr' || lang === 'en'; };
+      var fromUrl = new URLSearchParams(location.search).get('lang');
+      var saved = null;
+      try { saved = localStorage.getItem('readme-start-lang'); } catch (e) { /* private mode */ }
+      var browser = (navigator.language || '').toLowerCase().indexOf('fr') === 0 ? 'fr' : 'en';
+      setLang(valid(fromUrl) ? fromUrl : valid(saved) ? saved : browser);
+      document.querySelectorAll('[data-set-lang]').forEach(function (button) {
+        button.addEventListener('click', function () { setLang(button.getAttribute('data-set-lang')); });
+      });
+
+      // Copy buttons.
+      var status = document.getElementById('status');
+      document.querySelectorAll('[data-copy]').forEach(function (button) {
+        var original = button.innerHTML;
+        var timer = null;
+        button.addEventListener('click', function () {
+          var text = button.getAttribute('data-copy');
+          var done = function () {
+            var lang = root.getAttribute('data-lang');
+            button.textContent = meta[lang].copy;
+            status.textContent = meta[lang].copied;
+            clearTimeout(timer);
+            timer = setTimeout(function () { button.innerHTML = original; }, 1600);
+          };
+          if (navigator.clipboard && window.isSecureContext) {
+            navigator.clipboard.writeText(text).then(done, function () {});
+          } else {
+            var area = document.createElement('textarea');
+            area.value = text;
+            area.setAttribute('readonly', '');
+            area.style.position = 'absolute';
+            area.style.left = '-9999px';
+            document.body.appendChild(area);
+            area.select();
+            try { document.execCommand('copy'); done(); } catch (e) { /* nothing to do */ }
+            document.body.removeChild(area);
+          }
+        });
+      });
+
+      // GitHub links: from <meta name="repository">, or deduced from a
+      // GitHub Pages address such as https://user.github.io/readme-start/.
+      var repo = document.querySelector('meta[name="repository"]').getAttribute('content');
+      if (!repo && /\.github\.io$/.test(location.hostname)) {
+        var user = location.hostname.split('.')[0];
+        var project = location.pathname.split('/').filter(Boolean)[0];
+        repo = 'https://github.com/' + user + (project ? '/' + project : '');
+      }
+      if (repo) {
+        document.querySelectorAll('[data-repo-link]').forEach(function (el) {
+          el.hidden = false;
+          if (el.tagName === 'A') el.href = repo;
+        });
+        document.querySelectorAll('[data-repo-anchor]').forEach(function (a) { a.href = repo; });
+      }
+    })();
+  </script>
+</body>
+</html>
