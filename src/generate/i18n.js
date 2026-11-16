@@ -1,0 +1,323 @@
+// French typography puts a non-breaking space before ":", "!" and "?".
+const NB = ' ';
+
+const en = {
+  colon: ':',
+  toc: 'Table of contents',
+  website: 'Website',
+  sections: {
+    tech: 'Tech stack',
+    prerequisites: 'Prerequisites',
+    installation: 'Installation',
+    usage: 'Usage',
+    packages: 'Packages',
+    configuration: 'Configuration',
+    scripts: 'Available scripts',
+    tests: 'Running tests',
+    docker: 'Docker',
+    structure: 'Project structure',
+    contributing: 'Contributing',
+    license: 'License',
+    author: 'Author',
+  },
+  placeholder: {
+    description: 'Add a short description of your project here.',
+    usage: 'Explain how to use the project here.',
+  },
+  prerequisites: { optional: 'optional' },
+  install: {
+    clone: 'Clone the repository',
+    deps: 'Install the dependencies',
+    venv: 'Create and activate a virtual environment',
+    build: 'Build the project',
+    env: 'Create your environment file',
+  },
+  usage: {
+    cliInstall: 'Install the CLI globally',
+    cliInstallLocal: 'Install the CLI from the sources',
+    cliLink: 'Make the CLI available globally from the sources',
+    cliRun: 'Then run',
+    cliNpx: 'Or run it without installing anything',
+    libInstall: 'Install the package',
+    libImport: 'Then use it in your code',
+    libCargo: 'Or add it to your `Cargo.toml`',
+    dev: 'Start the development server',
+    start: 'Start the application',
+    build: 'Build for production',
+    production: 'Build and start the production version',
+    run: 'Run the project',
+    migrate: 'Apply the database migrations',
+    dbPrepare: 'Create and migrate the database',
+    laravelKey: 'Generate the application key',
+    watch: 'Or restart automatically on every change',
+    runJar: 'Package and run the application',
+    libMaven: 'Add the dependency to your `pom.xml`',
+    androidInstall: 'Install it on a connected device or emulator',
+    serveSite: 'Serve the site locally',
+    openXcode: 'Open the project in Xcode, then run it with ⌘R',
+    libSwiftPM: 'Add the package to the dependencies of your `Package.swift`',
+    libHex: 'Add it to the dependencies in your `mix.exs`',
+    libCMake: 'Add it to your CMake project',
+    setup: 'Install and set up everything',
+    openHtml: 'Open `index.html` in your browser.',
+  },
+  packages: {
+    intro: 'This repository is a monorepo managed with {tool}.',
+    package: 'Package',
+    description: 'Description',
+    runOne: 'Run a command in a single package',
+  },
+  tests: {
+    run: 'Run the test suite',
+    coverage: 'With coverage',
+    e2e: 'End-to-end tests',
+  },
+  config: {
+    intro: 'The application is configured with environment variables. Copy `{file}` to `.env` and adjust the values.',
+    variable: 'Variable',
+    description: 'Description',
+    default: 'Default',
+  },
+  scripts: {
+    command: 'Command',
+    description: 'Description',
+    runs: 'Runs {raw}',
+    target: 'Runs the `{name}` target',
+    known: {
+      start: 'Start the application',
+      dev: 'Start the development server',
+      serve: 'Serve the application',
+      build: 'Build for production',
+      preview: 'Preview the production build',
+      test: 'Run the tests',
+      'test:watch': 'Run the tests in watch mode',
+      'test:coverage': 'Run the tests with coverage',
+      coverage: 'Run the tests with coverage',
+      'test:e2e': 'Run the end-to-end tests',
+      e2e: 'Run the end-to-end tests',
+      lint: 'Lint the code',
+      'lint:fix': 'Lint the code and fix problems',
+      format: 'Format the code',
+      fmt: 'Format the code',
+      typecheck: 'Check types',
+      'type-check': 'Check types',
+      check: 'Run all checks',
+      watch: 'Rebuild on file changes',
+      clean: 'Remove build artifacts',
+      deploy: 'Deploy the application',
+      release: 'Publish a new release',
+      docs: 'Generate the documentation',
+      storybook: 'Start Storybook',
+      install: 'Install the project',
+      run: 'Run the project',
+      all: 'Build everything',
+      help: 'List the available commands',
+    },
+  },
+  docker: {
+    compose: 'Start the whole stack with Docker Compose',
+    image: 'Build and run the image',
+    imageAlt: 'Or build and run the image manually',
+  },
+  contributing: {
+    intro: 'Contributions are welcome! To propose a change:',
+    steps: [
+      'Fork the project',
+      'Create your branch (`git checkout -b feature/my-feature`)',
+      "Commit your changes (`git commit -m 'Add my feature'`)",
+      'Push the branch (`git push origin feature/my-feature`)',
+      'Open a pull request',
+    ],
+    guide: 'Contributions are welcome! Please read {file} before opening a pull request.',
+    issues: 'Found a bug or have an idea? [Open an issue]({url}).',
+    coc: 'This project follows a [code of conduct]({file}). By taking part, you agree to respect it.',
+  },
+  license: {
+    text: 'Distributed under the {license} license.',
+    see: 'See {file} for more information.',
+    proprietary: 'This project is proprietary. All rights reserved.',
+  },
+};
+
+const fr = {
+  colon: `${NB}:`,
+  toc: 'Sommaire',
+  website: 'Site web',
+  sections: {
+    tech: 'Technologies',
+    prerequisites: 'Prérequis',
+    installation: 'Installation',
+    usage: 'Utilisation',
+    packages: 'Paquets',
+    configuration: 'Configuration',
+    scripts: 'Scripts disponibles',
+    tests: 'Tests',
+    docker: 'Docker',
+    structure: 'Structure du projet',
+    contributing: 'Contribuer',
+    license: 'Licence',
+    author: 'Auteur',
+  },
+  placeholder: {
+    description: 'Ajoutez ici une courte description de votre projet.',
+    usage: 'Expliquez ici comment utiliser le projet.',
+  },
+  prerequisites: { optional: 'optionnel' },
+  install: {
+    clone: 'Cloner le dépôt',
+    deps: 'Installer les dépendances',
+    venv: 'Créer et activer un environnement virtuel',
+    build: 'Compiler le projet',
+    env: "Créer votre fichier d'environnement",
+  },
+  usage: {
+    cliInstall: 'Installer le CLI globalement',
+    cliInstallLocal: 'Installer le CLI depuis les sources',
+    cliLink: 'Rendre le CLI disponible globalement depuis les sources',
+    cliRun: 'Puis lancer',
+    cliNpx: "Ou l'exécuter sans rien installer",
+    libInstall: 'Installer le paquet',
+    libImport: "Puis l'utiliser dans votre code",
+    libCargo: "Ou l'ajouter à votre `Cargo.toml`",
+    dev: 'Lancer le serveur de développement',
+    start: "Démarrer l'application",
+    build: 'Compiler pour la production',
+    production: 'Compiler et lancer la version de production',
+    run: 'Lancer le projet',
+    migrate: 'Appliquer les migrations de la base de données',
+    dbPrepare: 'Créer et migrer la base de données',
+    laravelKey: "Générer la clé de l'application",
+    watch: 'Ou redémarrer automatiquement à chaque modification',
+    runJar: "Packager et lancer l'application",
+    libMaven: 'Ajouter la dépendance à votre `pom.xml`',
+    androidInstall: "L'installer sur un appareil connecté ou un émulateur",
+    serveSite: 'Servir le site en local',
+    openXcode: 'Ouvrir le projet dans Xcode, puis le lancer avec ⌘R',
+    libSwiftPM: 'Ajouter le paquet aux dépendances de votre `Package.swift`',
+    libHex: "L'ajouter aux dépendances de votre `mix.exs`",
+    libCMake: "L'ajouter à votre projet CMake",
+    setup: 'Tout installer et configurer',
+    openHtml: 'Ouvrez `index.html` dans votre navigateur.',
+  },
+  packages: {
+    intro: 'Ce dépôt est un monorepo géré avec {tool}.',
+    package: 'Paquet',
+    description: 'Description',
+    runOne: 'Lancer une commande dans un seul paquet',
+  },
+  tests: {
+    run: 'Lancer les tests',
+    coverage: 'Avec la couverture de code',
+    e2e: 'Tests de bout en bout',
+  },
+  config: {
+    intro: "L'application se configure avec des variables d'environnement. Copiez `{file}` vers `.env` puis adaptez les valeurs.",
+    variable: 'Variable',
+    description: 'Description',
+    default: 'Valeur par défaut',
+  },
+  scripts: {
+    command: 'Commande',
+    description: 'Description',
+    runs: 'Exécute {raw}',
+    target: 'Exécute la cible `{name}`',
+    known: {
+      start: "Démarre l'application",
+      dev: 'Lance le serveur de développement',
+      serve: "Sert l'application",
+      build: 'Compile pour la production',
+      preview: 'Prévisualise le build de production',
+      test: 'Lance les tests',
+      'test:watch': 'Lance les tests en mode watch',
+      'test:coverage': 'Lance les tests avec la couverture de code',
+      coverage: 'Lance les tests avec la couverture de code',
+      'test:e2e': 'Lance les tests de bout en bout',
+      e2e: 'Lance les tests de bout en bout',
+      lint: 'Analyse le code (lint)',
+      'lint:fix': 'Analyse le code et corrige les problèmes',
+      format: 'Formate le code',
+      fmt: 'Formate le code',
+      typecheck: 'Vérifie les types',
+      'type-check': 'Vérifie les types',
+      check: 'Lance toutes les vérifications',
+      watch: 'Recompile à chaque modification',
+      clean: 'Supprime les fichiers de build',
+      deploy: "Déploie l'application",
+      release: 'Publie une nouvelle version',
+      docs: 'Génère la documentation',
+      storybook: 'Lance Storybook',
+      install: 'Installe le projet',
+      run: 'Lance le projet',
+      all: 'Compile tout',
+      help: 'Liste les commandes disponibles',
+    },
+  },
+  docker: {
+    compose: 'Lancer toute la stack avec Docker Compose',
+    image: "Construire et lancer l'image",
+    imageAlt: "Ou construire et lancer l'image manuellement",
+  },
+  contributing: {
+    intro: `Les contributions sont les bienvenues${NB}! Pour proposer une modification${NB}:`,
+    steps: [
+      'Forkez le projet',
+      'Créez votre branche (`git checkout -b feature/ma-fonctionnalite`)',
+      "Commitez vos changements (`git commit -m 'Ajout de ma fonctionnalité'`)",
+      'Poussez la branche (`git push origin feature/ma-fonctionnalite`)',
+      'Ouvrez une pull request',
+    ],
+    guide: `Les contributions sont les bienvenues${NB}! Merci de lire {file} avant d'ouvrir une pull request.`,
+    issues: `Un bug ou une idée${NB}? [Ouvrez une issue]({url}).`,
+    coc: 'Ce projet suit un [code de conduite]({file}). En y participant, vous vous engagez à le respecter.',
+  },
+  license: {
+    text: 'Distribué sous licence {license}.',
+    see: "Voir {file} pour plus d'informations.",
+    proprietary: 'Ce projet est propriétaire. Tous droits réservés.',
+  },
+};
+
+export const STRINGS = { en, fr };
+export const LANGUAGES = Object.keys(STRINGS);
+export const PLACEHOLDER_DESCRIPTIONS = Object.values(STRINGS).map((s) => s.placeholder.description);
+/** Section ids, in the order they appear in a README. */
+export const SECTION_ORDER = Object.keys(en.sections);
+
+/**
+ * Other titles people give to the sections readme-start writes. They are only
+ * used to merge a hand-written README the first time readme-start runs on it,
+ * so that "## Getting started" is replaced instead of duplicated.
+ */
+export const SECTION_SYNONYMS = {
+  toc: ['Contents', 'TOC', 'Table des matières'],
+  tech: ['Stack', 'Built with', 'Technologies', 'Technologies used', 'Tech', 'Technos', 'Stack technique'],
+  prerequisites: ['Requirements', 'Prerequisite', 'Pré-requis', 'Before you begin', 'Dépendances requises'],
+  installation: ['Install', 'Installing', 'Setup', 'Set up', 'Getting started', 'Quick start', 'Quickstart', 'Mise en place', 'Démarrage', 'Démarrage rapide', 'Bien démarrer'],
+  usage: ['How to use', 'Using', 'Running', 'Run', 'Lancement', 'Utiliser'],
+  packages: ['Workspace', 'Workspaces', 'Modules', 'Monorepo'],
+  configuration: ['Config', 'Environment variables', 'Environment', 'Env', 'Settings', "Variables d'environnement", 'Paramètres'],
+  scripts: ['npm scripts', 'Commands', 'Available commands', 'Commandes', 'Commandes disponibles'],
+  tests: ['Testing', 'Test', 'Running the tests', 'Lancer les tests'],
+  docker: ['Running with Docker', 'With Docker', 'Avec Docker'],
+  structure: ['Structure', 'Folder structure', 'Directory structure', 'Project layout', 'Arborescence', 'Organisation du projet'],
+  contributing: ['Contribute', 'Contribution', 'Contributions', 'How to contribute', 'Contribuer au projet'],
+  license: ['Licensing', 'Licence'],
+  author: ['Authors', 'Auteurs', 'Maintainer', 'Maintainers', 'Mainteneur'],
+};
+
+const lookup = (dict, key) => key.split('.').reduce((node, k) => (node == null ? undefined : node[k]), dict);
+
+/**
+ * Returns t(key, params): the string for `key` in `lang` (falling back to
+ * English), with "{param}" placeholders replaced. Non-string entries (lists,
+ * maps) are returned as-is.
+ */
+export function translator(lang) {
+  const dict = STRINGS[lang] ?? STRINGS.en;
+  return (key, params = {}) => {
+    const value = lookup(dict, key) ?? lookup(STRINGS.en, key);
+    if (value === undefined) return key;
+    if (typeof value !== 'string') return value;
+    return value.replace(/\{(\w+)\}/g, (match, name) => (Object.hasOwn(params, name) ? String(params[name]) : match));
+  };
+}
