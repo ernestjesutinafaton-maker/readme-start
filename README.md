@@ -7,6 +7,8 @@ Zéro configuration, zéro dépendance.
 
 **[Site web](https://ernestjesutinafaton-maker.github.io/readme-start/)**
 
+[![npm version](https://img.shields.io/npm/v/readme-start)](https://www.npmjs.com/package/readme-start)
+[![npm downloads](https://img.shields.io/npm/dm/readme-start)](https://www.npmjs.com/package/readme-start)
 ![license](https://img.shields.io/badge/license-MIT-green)
 ![node](https://img.shields.io/badge/node-%3E%3D20-5FA04E?logo=nodedotjs&logoColor=white)
 ![dependencies](https://img.shields.io/badge/dependencies-0-brightgreen)
