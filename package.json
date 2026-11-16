@@ -1,0 +1,32 @@
+{
+  "name": "readme-start",
+  "version": "0.1.0",
+  "description": "Generate a clean, complete README.md from your project's files — zero config, zero dependencies.",
+  "type": "module",
+  "bin": {
+    "readme-start": "./bin/readme-start.js"
+  },
+  "exports": {
+    ".": "./src/index.js"
+  },
+  "files": [
+    "bin",
+    "src"
+  ],
+  "scripts": {
+    "start": "node bin/readme-start.js",
+    "test": "node --test"
+  },
+  "keywords": [
+    "readme",
+    "generator",
+    "cli",
+    "documentation",
+    "markdown",
+    "badges"
+  ],
+  "engines": {
+    "node": ">=20"
+  },
+  "license": "MIT"
+}
