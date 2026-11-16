@@ -70,7 +70,7 @@
     a:hover { text-decoration-thickness: 2px; }
     :focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; border-radius: 6px; }
     /* Programming fonts turn "<!--" and "--" into arrows and dashes: keep the real characters. */
-    code, kbd, pre { font-variant-ligatures: none; font-feature-settings: "liga" 0, "calt" 0; }
+    code, kbd, pre, .term { font-variant-ligatures: none; font-feature-settings: "liga" 0, "calt" 0; }
     code, kbd { font-family: var(--mono); font-size: 0.9em; }
     p code, li code, td code, .desc code {
       background: var(--surface-2);
@@ -93,13 +93,13 @@
     .nav { display: flex; align-items: center; gap: 24px; height: 60px; }
     .brand { display: flex; align-items: center; gap: 10px; font: 600 17px var(--mono); color: var(--text); text-decoration: none; white-space: nowrap; }
     @media (max-width: 440px) { .brand { font-size: 15px; } .nav-actions .label { display: none; } }
-    @media (max-width: 600px) { .terminal pre, .code-card pre { font-size: 12px; } }
     .brand svg { flex: none; }
     .nav-links { display: flex; gap: 20px; margin-left: auto; }
     .nav-links a { color: var(--muted); text-decoration: none; font-size: 15px; }
     .nav-links a:hover { color: var(--text); }
     .nav-actions { display: flex; align-items: center; gap: 10px; }
-    @media (max-width: 760px) { .nav-links { display: none; } .nav-actions { margin-left: auto; } }
+    /* The links need about 760px beside the brand and the buttons: below that they would push the buttons off screen. */
+    @media (max-width: 860px) { .nav-links { display: none; } .nav-actions { margin-left: auto; } }
 
     .lang-switch { display: inline-flex; border: 1px solid var(--border); border-radius: 999px; padding: 2px; background: var(--surface); }
     .lang-switch button {
@@ -120,7 +120,8 @@
     .btn.small { padding: 6px 12px; font-size: 14px; }
 
     /* Hero */
-    .hero { padding: 88px 0 40px; text-align: center; }
+    /* padding-block only: the side padding comes from .container. */
+    .hero { padding-block: 88px 40px; text-align: center; }
     .eyebrow {
       display: inline-flex; align-items: center; gap: 8px; margin-bottom: 22px;
       font-size: 13px; color: var(--muted); border: 1px solid var(--border); background: var(--surface);
@@ -139,6 +140,7 @@
       background: var(--term-bg); color: var(--term-text);
       border-radius: 12px; padding: 8px 8px 8px 18px; font: 15px var(--mono);
       box-shadow: var(--shadow); max-width: 100%;
+      border: 1px solid #1f2622; /* same edge as the terminal window: keeps the box visible on the dark theme */
     }
     .cmd .prompt { color: var(--term-green); user-select: none; }
     .cmd code { font-size: inherit; overflow-x: auto; white-space: nowrap; }
@@ -151,7 +153,7 @@
     .meta-line .item + .item::before { content: "·"; margin: 0 10px; opacity: .6; }
 
     /* Demo */
-    .demo { display: grid; grid-template-columns: 1fr 1.08fr; gap: 22px; padding: 36px 0 24px; align-items: start; }
+    .demo { display: grid; grid-template-columns: 1fr 1.08fr; gap: 22px; padding-block: 36px 24px; align-items: start; }
     @media (max-width: 900px) { .demo { grid-template-columns: 1fr; } }
     .window { border-radius: var(--radius); box-shadow: var(--shadow); overflow: hidden; border: 1px solid var(--border); }
     .window-bar { display: flex; align-items: center; gap: 7px; padding: 11px 14px; font: 12px var(--mono); }
@@ -160,7 +162,12 @@
     .window-bar span { margin-left: 10px; opacity: .65; }
     .terminal { background: var(--term-bg); color: var(--term-text); border-color: #1f2622; }
     .terminal .window-bar { background: #151a17; color: var(--term-text); }
-    .terminal pre { margin: 0; padding: 18px 20px 22px; font: 13.5px/1.75 var(--mono); overflow-x: auto; }
+    /* Terminal output as wrapping lines: values stay aligned on narrow screens instead of being cut off. */
+    .term { padding: 18px 20px 22px; font: 13.5px/1.75 var(--mono); overflow-wrap: anywhere; }
+    .term p, .term dl, .term dd { margin: 0; }
+    .term .gap { margin-top: 1.75em; }
+    .term dl { display: grid; grid-template-columns: 10ch 1fr; padding-left: 2ch; }
+    .term dt { color: var(--term-dim); }
     .t-prompt { color: var(--term-green); } .t-dim { color: var(--term-dim); } .t-ok { color: var(--term-green); } .t-cyan { color: var(--term-cyan); }
     .cursor { display: inline-block; width: 8px; height: 16px; background: var(--term-text); vertical-align: -3px; animation: blink 1.1s steps(1) infinite; }
     @keyframes blink { 50% { opacity: 0; } }
@@ -174,7 +181,7 @@
     .md p { margin: 0 0 10px; color: var(--muted); }
     .md ol { margin: 0; padding-left: 20px; }
     .md li { margin: 6px 0; }
-    .md pre { margin: 6px 0 10px; background: var(--surface-2); border: 1px solid var(--border); border-radius: 8px; padding: 9px 12px; font: 12.5px/1.5 var(--mono); overflow-x: auto; }
+    .md pre { margin: 6px 0 10px; background: var(--surface-2); border: 1px solid var(--border); border-radius: 8px; padding: 9px 12px; font: 12.5px/1.5 var(--mono); white-space: pre-wrap; overflow-wrap: anywhere; }
     .shields { display: flex; flex-wrap: wrap; justify-content: center; gap: 5px; margin-top: 10px; }
     .shield { display: inline-flex; font: 11px/18px var(--sans); border-radius: 3px; overflow: hidden; color: #fff; }
     .shield b { background: #555; padding: 0 6px; font-weight: 400; }
@@ -183,7 +190,7 @@
     .stack span { font: 700 10.5px/24px var(--sans); letter-spacing: .08em; text-transform: uppercase; color: #fff; padding: 0 9px; border-radius: 3px; }
 
     /* Sections */
-    section.block { padding: 72px 0 0; }
+    section.block { padding-top: 72px; }
     .section-head { max-width: 640px; margin-bottom: 30px; }
     h2 { font-size: clamp(28px, 3.6vw, 38px); line-height: 1.15; letter-spacing: -0.025em; margin: 0 0 12px; }
     .section-head p { margin: 0; color: var(--muted); font-size: 17px; }
@@ -240,6 +247,54 @@
     footer.site { margin-top: 72px; padding: 28px 0 40px; border-top: 1px solid var(--border); color: var(--muted); font-size: 14px; }
     footer .row { display: flex; flex-wrap: wrap; gap: 12px 24px; justify-content: space-between; }
     footer a { color: var(--muted); }
+
+    /* Phones */
+    @media (max-width: 600px) {
+      .hero { padding-block: 48px 28px; }
+      .eyebrow { margin-bottom: 18px; font-size: 12.5px; }
+      h1 { font-size: min(38px, 9.4vw); }
+      .lead { margin-top: 18px; }
+      .install { margin-top: 28px; }
+      .meta-line { font-size: 13px; }
+      .meta-line .item + .item::before { margin: 0 6px; }
+      .demo { padding-block: 28px 8px; gap: 16px; }
+      .term, .code-card pre { padding: 16px; font-size: 12px; }
+      .code-card pre { white-space: pre-wrap; overflow-wrap: anywhere; }
+      .md { padding: 18px 16px 20px; }
+      section.block { padding-top: 56px; }
+      .section-head { margin-bottom: 22px; }
+      .section-head p { font-size: 16px; }
+      /* Feature cards: icon beside the title to save height. */
+      .card { display: grid; grid-template-columns: auto 1fr; align-items: center; column-gap: 12px; padding: 16px; }
+      .card .icon { width: 32px; height: 32px; margin: 0; }
+      .card h3 { margin: 0; }
+      .card p { grid-column: 1 / -1; margin-top: 8px; }
+      /* One column of ecosystems: same logo width everywhere so the names line up. */
+      .lang { padding: 14px; }
+      .lang .logos { width: 58px; justify-content: center; }
+      /* Options: one block per option instead of a cramped two-column table. */
+      .table-wrap table, .table-wrap tbody, .table-wrap tr, .table-wrap td { display: block; }
+      .table-wrap thead { display: none; }
+      .table-wrap tr { padding: 14px 16px; border-bottom: 1px solid var(--border); }
+      .table-wrap tr:last-child { border-bottom: 0; }
+      .table-wrap td { padding: 0; border: 0; white-space: normal; }
+      .table-wrap td + td { margin-top: 6px; color: var(--muted); }
+      .cta { margin-top: 64px; padding: 36px 20px; border-radius: 18px; }
+      footer.site { margin-top: 56px; }
+    }
+    @media (max-width: 350px) {
+      .nav { gap: 12px; }
+      .eyebrow { font-size: 12px; padding: 5px 10px; }
+      /* Keeps the whole command visible beside its copy button. */
+      .cmd { font-size: 13.5px; gap: 10px; padding-left: 14px; }
+      .cta { padding-inline: 14px; }
+      .meta-line .item { display: block; }
+      .meta-line .item + .item::before { content: none; }
+    }
+    /* Larger tap targets on touch screens. */
+    @media (pointer: coarse) {
+      .lang-switch button, .btn.small, .copy { padding: 8px 12px; }
+    }
 
     .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
   </style>
@@ -302,32 +357,38 @@
     <section class="container demo" aria-label="Démonstration / Demo">
       <div class="window terminal">
         <div class="window-bar"><i></i><i></i><i></i><span>~/task-board</span></div>
-<pre lang="fr"><span class="t-prompt">$</span> npx readme-start --lang fr
-<span class="t-ok">✔</span> README.md generated
-  <span class="t-dim">Detected</span>  Node.js (pnpm)
-  <span class="t-dim">Stack</span>     TypeScript, Next.js, React, Prisma, Docker
-  <span class="t-dim">Sections</span>  Technologies · Prérequis · Installation ·
-            Utilisation · Configuration · Tests…
-
-<span class="t-dim"># … vous ajoutez une section « Fonctionnalités »</span>
-
-<span class="t-prompt">$</span> npx readme-start --lang fr
-<span class="t-ok">✔</span> README.md updated
-  <span class="t-dim">Kept</span>      <span class="t-cyan">✨ Fonctionnalités</span> (your sections)
-<span class="t-prompt">$</span> <span class="cursor" aria-hidden="true"></span></pre>
-<pre lang="en"><span class="t-prompt">$</span> npx readme-start
-<span class="t-ok">✔</span> README.md generated
-  <span class="t-dim">Detected</span>  Node.js (pnpm)
-  <span class="t-dim">Stack</span>     TypeScript, Next.js, React, Prisma, Docker
-  <span class="t-dim">Sections</span>  Tech stack · Prerequisites · Installation ·
-            Usage · Configuration · Running tests…
-
-<span class="t-dim"># … you add a "Features" section</span>
-
-<span class="t-prompt">$</span> npx readme-start
-<span class="t-ok">✔</span> README.md updated
-  <span class="t-dim">Kept</span>      <span class="t-cyan">✨ Features</span> (your sections)
-<span class="t-prompt">$</span> <span class="cursor" aria-hidden="true"></span></pre>
+        <div class="term" lang="fr">
+          <p><span class="t-prompt">$</span> npx readme-start --lang fr</p>
+          <p><span class="t-ok">✔</span> README.md generated</p>
+          <dl>
+            <dt>Detected</dt><dd>Node.js (pnpm)</dd>
+            <dt>Stack</dt><dd>TypeScript, Next.js, React, Prisma, Docker</dd>
+            <dt>Sections</dt><dd>Technologies&nbsp;· Prérequis&nbsp;· Installation&nbsp;· Utilisation&nbsp;· Configuration&nbsp;· Tests…</dd>
+          </dl>
+          <p class="t-dim gap"># … vous ajoutez une section «&nbsp;Fonctionnalités&nbsp;»</p>
+          <p class="gap"><span class="t-prompt">$</span> npx readme-start --lang fr</p>
+          <p><span class="t-ok">✔</span> README.md updated</p>
+          <dl>
+            <dt>Kept</dt><dd><span class="t-cyan">✨ Fonctionnalités</span> (your&nbsp;sections)</dd>
+          </dl>
+          <p><span class="t-prompt">$</span> <span class="cursor" aria-hidden="true"></span></p>
+        </div>
+        <div class="term" lang="en">
+          <p><span class="t-prompt">$</span> npx readme-start</p>
+          <p><span class="t-ok">✔</span> README.md generated</p>
+          <dl>
+            <dt>Detected</dt><dd>Node.js (pnpm)</dd>
+            <dt>Stack</dt><dd>TypeScript, Next.js, React, Prisma, Docker</dd>
+            <dt>Sections</dt><dd>Tech&nbsp;stack&nbsp;· Prerequisites&nbsp;· Installation&nbsp;· Usage&nbsp;· Configuration&nbsp;· Running&nbsp;tests…</dd>
+          </dl>
+          <p class="t-dim gap"># … you add a "Features" section</p>
+          <p class="gap"><span class="t-prompt">$</span> npx readme-start</p>
+          <p><span class="t-ok">✔</span> README.md updated</p>
+          <dl>
+            <dt>Kept</dt><dd><span class="t-cyan">✨ Features</span> (your&nbsp;sections)</dd>
+          </dl>
+          <p><span class="t-prompt">$</span> <span class="cursor" aria-hidden="true"></span></p>
+        </div>
       </div>
 
       <div class="window readme" aria-label="README.md">
