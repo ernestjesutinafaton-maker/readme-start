@@ -47,6 +47,14 @@ jobs:
       - name: Check what would be published
         run: npm pack --dry-run
 
+      - name: package.json must need no correction from npm
+        run: |
+          npm pkg fix
+          git diff --exit-code -- package.json || {
+            echo "::error file=package.json::npm rewrites package.json on publish. Run 'npm pkg fix' and commit the result."
+            exit 1
+          }
+
       - name: The CLI entry point must use LF line endings
         run: |
           if head -1 bin/readme-start.js | grep -q $'\r'; then

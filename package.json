@@ -4,7 +4,7 @@
   "description": "Generate a clean, complete README.md from your project's files — zero config, zero dependencies.",
   "type": "module",
   "bin": {
-    "readme-start": "./bin/readme-start.js"
+    "readme-start": "bin/readme-start.js"
   },
   "exports": {
     ".": "./src/index.js"
