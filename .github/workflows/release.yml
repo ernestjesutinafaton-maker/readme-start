@@ -1,0 +1,72 @@
+name: Release
+
+# Publishing a new version:
+#   npm version patch        (or minor / major: updates package.json, commits, tags vX.Y.Z)
+#   git push --follow-tags
+#
+# npm authenticates this workflow with trusted publishing (OIDC): no token is
+# stored in GitHub. It must be enabled once on npmjs.com, in the package
+# settings, for the repository ernestjesutinafaton-maker/readme-start and the
+# workflow file release.yml.
+
+on:
+  push:
+    tags: ['v*']
+
+permissions:
+  contents: read
+
+concurrency:
+  group: release
+  cancel-in-progress: false
+
+jobs:
+  test:
+    uses: ./.github/workflows/ci.yml
+
+  publish:
+    name: Publish to npm
+    needs: test
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write # trusted publishing and provenance
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 24
+          registry-url: https://registry.npmjs.org
+
+      - name: Use npm 11.5.1 or newer (required for trusted publishing)
+        run: npm install -g npm@11
+
+      - name: Check that the tag matches package.json
+        id: version
+        run: |
+          version="$(node -p "require('./package.json').version")"
+          if [ "$GITHUB_REF_NAME" != "v$version" ]; then
+            echo "::error::The tag $GITHUB_REF_NAME does not match the package.json version ($version)."
+            exit 1
+          fi
+          # Pre-releases (1.2.0-beta.1) go to the "next" tag, not "latest".
+          if [[ "$version" == *-* ]]; then echo "dist_tag=next" >> "$GITHUB_OUTPUT"; else echo "dist_tag=latest" >> "$GITHUB_OUTPUT"; fi
+
+      - name: Publish
+        run: npm publish --tag "${{ steps.version.outputs.dist_tag }}"
+
+  github-release:
+    name: GitHub release
+    needs: publish
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Create the release with generated notes
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          prerelease=""
+          if [[ "$GITHUB_REF_NAME" == *-* ]]; then prerelease="--prerelease"; fi
+          gh release create "$GITHUB_REF_NAME" --repo "$GITHUB_REPOSITORY" --title "$GITHUB_REF_NAME" --generate-notes $prerelease

@@ -9,6 +9,7 @@ Zéro configuration, zéro dépendance.
 
 [![npm version](https://img.shields.io/npm/v/readme-start)](https://www.npmjs.com/package/readme-start)
 [![npm downloads](https://img.shields.io/npm/dm/readme-start)](https://www.npmjs.com/package/readme-start)
+[![CI](https://github.com/ernestjesutinafaton-maker/readme-start/actions/workflows/ci.yml/badge.svg)](https://github.com/ernestjesutinafaton-maker/readme-start/actions/workflows/ci.yml)
 ![license](https://img.shields.io/badge/license-MIT-green)
 ![node](https://img.shields.io/badge/node-%3E%3D20-5FA04E?logo=nodedotjs&logoColor=white)
 ![dependencies](https://img.shields.io/badge/dependencies-0-brightgreen)
@@ -171,6 +172,19 @@ src/
 ```
 
 Pour ajouter un écosystème, créez un détecteur dans `src/analyze/ecosystems/` qui renvoie le même format de données que les autres, puis ajoutez-le à `DETECTORS` dans [src/analyze/index.js](src/analyze/index.js).
+
+### Intégration continue et publication
+
+À chaque push sur `main` et à chaque pull request, GitHub Actions lance les tests sous Linux, Windows et macOS avec Node.js 20, 22 et 24 ([ci.yml](.github/workflows/ci.yml)).
+
+Pour publier une nouvelle version :
+
+```bash
+npm version patch          # ou minor / major : met à jour package.json, commite et crée le tag vX.Y.Z
+git push --follow-tags     # GitHub Actions teste, publie sur npm puis crée la release GitHub
+```
+
+Le workflow [release.yml](.github/workflows/release.yml) vérifie que le tag correspond à la version du `package.json`, publie avec le *trusted publishing* de npm (aucun jeton stocké sur GitHub, provenance signée) et crée la release avec des notes générées. Les pré-versions (`1.2.0-beta.1`) sont publiées sous le tag npm `next`.
 
 ### Site web
 

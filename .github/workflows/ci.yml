@@ -1,0 +1,55 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+    paths-ignore: ['docs/**']
+  pull_request:
+    paths-ignore: ['docs/**']
+  # Also run by the release workflow before publishing.
+  workflow_call:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    name: Node ${{ matrix.node }} on ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+        node: [20, 22, 24]
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-node@v5
+        with:
+          node-version: ${{ matrix.node }}
+
+      - name: Run the tests
+        run: npm test
+
+      - name: Run the CLI on its own repository
+        run: node bin/readme-start.js --stdout -y
+
+  package:
+    name: Package contents
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 24
+
+      - name: Check what would be published
+        run: npm pack --dry-run
+
+      - name: The CLI entry point must use LF line endings
+        run: |
+          if head -1 bin/readme-start.js | grep -q $'\r'; then
+            echo "::error file=bin/readme-start.js::CRLF in the shebang breaks the CLI on macOS and Linux."
+            exit 1
+          fi
