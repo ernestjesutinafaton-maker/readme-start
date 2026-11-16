@@ -5,6 +5,8 @@
 Générez un `README.md` complet et soigné à partir des fichiers de votre projet, puis régénérez-le sans perdre ce que vous avez écrit.
 Zéro configuration, zéro dépendance.
 
+**[Site web](https://ernestjesutinafaton-maker.github.io/readme-start/)**
+
 ![license](https://img.shields.io/badge/license-MIT-green)
 ![node](https://img.shields.io/badge/node-%3E%3D20-5FA04E?logo=nodedotjs&logoColor=white)
 ![dependencies](https://img.shields.io/badge/dependencies-0-brightgreen)
@@ -46,7 +48,7 @@ npm install -g readme-start
 Depuis les sources :
 
 ```bash
-git clone <url-du-depot>
+git clone https://github.com/ernestjesutinafaton-maker/readme-start.git
 cd readme-start
 npm link
 ```

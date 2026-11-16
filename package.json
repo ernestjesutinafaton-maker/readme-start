@@ -28,5 +28,13 @@
   "engines": {
     "node": ">=20"
   },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ernestjesutinafaton-maker/readme-start.git"
+  },
+  "homepage": "https://ernestjesutinafaton-maker.github.io/readme-start/",
+  "bugs": {
+    "url": "https://github.com/ernestjesutinafaton-maker/readme-start/issues"
+  },
   "license": "MIT"
 }
