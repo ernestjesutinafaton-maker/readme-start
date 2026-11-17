@@ -21,6 +21,12 @@ cd mon-projet
 npx readme-start
 ```
 
+> **In English:** `readme-start` generates a complete `README.md` from your project's files in one command:
+> 12 ecosystems, zero dependencies, 100% offline. Run it again later, and it updates the README without losing what you wrote by hand.
+>
+> ⭐ Si `readme-start` vous fait gagner du temps, une étoile sur GitHub aide beaucoup à le faire connaître.
+> If it saves you time, a star on GitHub really helps.
+
 `readme-start` lit vos manifestes (`package.json`, `pyproject.toml`, `Cargo.toml`, `go.mod`, `composer.json`, `Gemfile`, `pom.xml`, `build.gradle`, `*.sln`, `pubspec.yaml`, `Package.swift`, `mix.exs`, `CMakeLists.txt`…), votre `Dockerfile`, `.env.example`, `LICENSE`, `.git/config`… et en tire un README prêt à publier : description, badges, technologies, prérequis, installation, utilisation, paquets du monorepo, variables d'environnement, scripts, tests, Docker, arborescence, contribution, licence et auteur.
 
 ## Fonctionnalités
